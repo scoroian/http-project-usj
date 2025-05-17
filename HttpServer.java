@@ -66,7 +66,7 @@ public class HttpServer {
                         }
                     }
                     else {
-                        sendResponse(writer, "404 Not Found", "text/plain", "Recurso no encontrado");
+                        sendResponse(writer, "400 Bad Request", "text/plain", "Solicitud incorrecta");
                     }
                     break;
 
@@ -76,7 +76,7 @@ public class HttpServer {
                         items.put(id, body);
                         sendResponse(writer, "201 Created", "text/plain", "Item creado con ID: " + id);
                     } else {
-                        sendResponse(writer, "404 Not Found", "text/plain", "Recurso no encontrado");
+                        sendResponse(writer, "400 Bad Request", "text/plain", "Solicitud incorrecta");
                     }
                     break;
 
