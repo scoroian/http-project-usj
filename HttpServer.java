@@ -56,7 +56,16 @@ public class HttpServer {
                         sendResponse(writer, "200 OK", "text/html", "<h1>Bienvenido al servidor HTTP!</h1>");
                     } else if (path.equals("/items")) {
                         sendResponse(writer, "200 OK", "application/json", items.toString());
-                    } else {
+                    } else if (path.matches("/items/\\d+")) {
+                        int id = Integer.parseInt(path.split("/")[2]);
+                        String item = items.get(id);
+                        if (item != null) {
+                            sendResponse(writer, "200 OK", "text/plain", item);
+                        } else {
+                            sendResponse(writer, "404 Not Found", "text/plain", "ID no encontrado");
+                        }
+                    }
+                    else {
                         sendResponse(writer, "404 Not Found", "text/plain", "Recurso no encontrado");
                     }
                     break;

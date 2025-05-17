@@ -33,13 +33,41 @@ public class HttpClient {
                 System.out.println("\nMétodo HTTP (GET, POST, PUT, DELETE): ");
                 String method = scanner.nextLine().trim().toUpperCase();
 
-                System.out.println("Ruta (por ejemplo: /items o /items/1): ");
-                String path = scanner.nextLine().trim();
-
+                String path = "";
                 String body = "";
-                if (method.equals("POST") || method.equals("PUT")) {
-                    System.out.println("Cuerpo (texto plano): ");
-                    body = scanner.nextLine();
+
+                switch (method) {
+                    case "GET":
+                        System.out.println("¿Obtener todos los items? (si/no): ");
+                        String all = scanner.nextLine().trim().toLowerCase();
+                        if (all.equals("si")) {
+                            path = "/items";
+                        } else {
+                            System.out.println("ID del item: ");
+                            String idGet = scanner.nextLine().trim();
+                            path = "/items/" + idGet;
+                        }
+                        break;
+                    case "POST":
+                        path = "/items";
+                        System.out.println("Cuerpo (texto plano): ");
+                        body = scanner.nextLine();
+                        break;
+                    case "PUT":
+                        System.out.println("ID del item a modificar: ");
+                        String idPut = scanner.nextLine().trim();
+                        path = "/items/" + idPut;
+                        System.out.println("Cuerpo (texto plano): ");
+                        body = scanner.nextLine();
+                        break;
+                    case "DELETE":
+                        System.out.println("ID del item a borrar: ");
+                        String idDel = scanner.nextLine().trim();
+                        path = "/items/" + idDel;
+                        break;
+                    default:
+                        System.out.println("Método no soportado");
+                        continue;
                 }
 
                 sendRequest(method, "localhost", 8080, path, "", body);

@@ -2,13 +2,26 @@ function updateRouteContainer() {
     const method = document.getElementById('method').value;
     const routeContainer = document.getElementById('routeContainer');
     let html = '';
-  
+
     if (method === 'GET') {
-      html += `<label for="routeSelect">Ruta del recurso:</label>
-               <select id="routeSelect" class="form-select">
-                 <option value="/">/</option>
-                 <option value="/items">/items</option>
-               </select>`;
+      html += `
+        <label>Ruta del recurso:</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="getOption" id="getRoot" value="root" checked>
+          <label class="form-check-label" for="getRoot">/</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="getOption" id="getItems" value="items">
+          <label class="form-check-label" for="getItems">/items</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="getOption" id="getById" value="byId">
+          <label class="form-check-label" for="getById">/items/{id}</label>
+        </div>
+        <div id="getIdContainer" class="mt-2" style="display:none;">
+          <input type="text" id="getIdField" class="form-control" placeholder="ID del item">
+        </div>
+      `;
     } else if (method === 'POST') {
       html += `<label for="routeInput">Ruta del recurso:</label>
                <input type="text" id="routeInput" class="form-control" value="/items" readonly>`;
@@ -23,6 +36,16 @@ function updateRouteContainer() {
                <input type="text" id="routeInput" class="form-control" value="" readonly>`;
     }
     routeContainer.innerHTML = html;
+
+    // Mostrar/ocultar campo de ID en GET
+    if (method === 'GET') {
+      document.querySelectorAll('input[name="getOption"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          const container = document.getElementById('getIdContainer');
+          container.style.display = document.getElementById('getById').checked ? 'block' : 'none';
+        });
+      });
+    }
   }
   
   document.getElementById('method').addEventListener('change', updateRouteContainer);
@@ -31,26 +54,28 @@ function updateRouteContainer() {
   async function sendRequest() {
     const method = document.getElementById('method').value;
     let path = '';
-
+  
     if (method === 'GET') {
-      path = document.getElementById('routeSelect').value;
+      const option = document.querySelector('input[name="getOption"]:checked').value;
+      if (option === 'root') {
+        path = '/';
+      } else if (option === 'items') {
+        path = '/items';
+      } else {
+        const id = document.getElementById('getIdField').value;
+        path = '/items/' + id;
+      }
     } else if (method === 'POST') {
       path = document.getElementById('routeInput').value;
     } else if (method === 'PUT' || method === 'DELETE') {
       const baseRoute = document.getElementById('baseRoute').value;
-      const idField = document.getElementById('idField').value;
-      path = baseRoute + idField;
-    } else {
-      path = '';
+      const id = document.getElementById('idField').value;
+      path = baseRoute + id;
     }
   
     const body = document.getElementById('body').value;
   
-    let options = {
-      method,
-      headers: {}
-    };
-  
+    const options = { method, headers: {} };
     if (method === 'POST' || method === 'PUT') {
       options.headers['Content-Type'] = 'text/plain';
       options.body = body;
@@ -65,4 +90,3 @@ function updateRouteContainer() {
       document.getElementById('response').textContent = 'Error: ' + error.message;
     }
   }
-  
